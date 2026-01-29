@@ -16,52 +16,48 @@ SELECT CONCAT(
         'Njoroge', 'Odhiambo', 'Akinyi', 'Kosgei'
     )
 )
-FROM (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) a
-CROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) b
+FROM 
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) AS a,
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
+     UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) AS b
 LIMIT 60;
 
+SELECT COUNT(*) AS tenants_created FROM Customers;
 
-SELECT COUNT(*) AS tenants_created FROM Customers; 
-
-Create ~800 rentals — high % Completed so most tenants get points
 INSERT INTO Rentals (customer_id, status)
 SELECT 
     c.customer_id,
     CASE 
-        WHEN RAND() < 0.82 THEN 'Completed'     -
+        WHEN RAND() < 0.82 THEN 'Completed'
         WHEN RAND() < 0.92 THEN 'Active'
         ELSE 'Pending'
     END AS status
 FROM Customers c
 CROSS JOIN (
-    SELECT n FROM (
-        SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 
-        UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
-        UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13
-    ) nums
-) multipliers
-WHERE c.customer_id <= 60
+    SELECT 0  UNION SELECT 1  UNION SELECT 2  UNION SELECT 3  UNION SELECT 4
+    UNION SELECT 5  UNION SELECT 6  UNION SELECT 7  UNION SELECT 8  UNION SELECT 9
+    UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13
+) AS multipliers
+WHERE c.customer_id BETWEEN 1 AND 60
 ORDER BY RAND()
 LIMIT 800;
 
-SELECT COUNT(*) AS total_rentals FROM Rentals;                 
-SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';  
+SELECT COUNT(*) AS total_rentals FROM Rentals;
+SELECT COUNT(*) AS completed_rentals FROM Rentals WHERE status = 'Completed';
 
-
-UPDATE Rentals 
-SET status = status 
+UPDATE Rentals
+SET status = status
 WHERE status = 'Completed';
-
 
 SELECT 
     c.customer_id,
     c.name,
-    COALESCE(cp.points, 0) AS points_earned,
-    COUNT(r.rental_id) AS total_rentals,
-    COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS paid_rentals
+    COALESCE(cp.points, 0)           AS points_earned,
+    COUNT(r.rental_id)               AS total_rentals,
+    COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS completed_rentals
 FROM Customers c
 LEFT JOIN CustomerPoints cp ON cp.customer_id = c.customer_id
 LEFT JOIN Rentals r ON r.customer_id = c.customer_id
 GROUP BY c.customer_id, c.name, cp.points
-ORDER BY points_earned DESC, paid_rentals DESC
+ORDER BY points_earned DESC, completed_rentals DESC
 LIMIT 60;
