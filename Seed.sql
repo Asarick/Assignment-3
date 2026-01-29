@@ -46,3 +46,8 @@ LIMIT 800;
 
 SELECT COUNT(*) AS total_rentals FROM Rentals;                 
 SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';  
+
+
+UPDATE Rentals 
+SET status = status 
+WHERE status = 'Completed';
