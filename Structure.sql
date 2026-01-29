@@ -23,3 +23,25 @@ CREATE TABLE CustomerPoints (
         ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
 );
+
+DELIMITER $$
+
+CREATE TRIGGER trg_award_loyalty_points
+AFTER UPDATE ON Rentals
+FOR EACH ROW
+BEGIN
+    DECLARE earned_points INT;
+
+    IF OLD.status <> 'Completed' AND NEW.status = 'Completed' THEN
+        SET earned_points = FLOOR(
+            (DAY(LAST_DAY(CURDATE())) - DAY(CURDATE())) / 8
+        );
+
+        INSERT INTO CustomerPoints (customer_id, points)
+        VALUES (NEW.customer_id, earned_points)
+        ON DUPLICATE KEY UPDATE
+            points = points + earned_points;
+    END IF;
+END$$
+
+DELIMITER ;
