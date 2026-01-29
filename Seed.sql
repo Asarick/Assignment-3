@@ -22,3 +22,27 @@ LIMIT 60;
 
 
 SELECT COUNT(*) AS tenants_created FROM Customers; 
+
+Create ~800 rentals — high % Completed so most tenants get points
+INSERT INTO Rentals (customer_id, status)
+SELECT 
+    c.customer_id,
+    CASE 
+        WHEN RAND() < 0.82 THEN 'Completed'     -
+        WHEN RAND() < 0.92 THEN 'Active'
+        ELSE 'Pending'
+    END AS status
+FROM Customers c
+CROSS JOIN (
+    SELECT n FROM (
+        SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 
+        UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
+        UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13
+    ) nums
+) multipliers
+WHERE c.customer_id <= 60
+ORDER BY RAND()
+LIMIT 800;
+
+SELECT COUNT(*) AS total_rentals FROM Rentals;                 
+SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';  -- should be ~650–680
