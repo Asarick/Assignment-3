@@ -45,4 +45,4 @@ ORDER BY RAND()
 LIMIT 800;
 
 SELECT COUNT(*) AS total_rentals FROM Rentals;                 
-SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';  -- should be ~650–680
+SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';  
