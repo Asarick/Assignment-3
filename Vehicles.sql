@@ -9,3 +9,11 @@ CREATE TABLE `customers` (
   `phone` varchar(20) NOT NULL,
   `membership_tier` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE locations (
+  location_id int(11) NOT NULL,
+  city varchar(50) NOT NULL,
+  state varchar(2) NOT NULL,
+  zip_code varchar(10) NOT NULL,
+  region varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
