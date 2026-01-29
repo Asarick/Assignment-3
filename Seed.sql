@@ -51,3 +51,17 @@ SELECT COUNT(*) AS completed_payments FROM Rentals WHERE status = 'Completed';
 UPDATE Rentals 
 SET status = status 
 WHERE status = 'Completed';
+
+
+SELECT 
+    c.customer_id,
+    c.name,
+    COALESCE(cp.points, 0) AS points_earned,
+    COUNT(r.rental_id) AS total_rentals,
+    COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS paid_rentals
+FROM Customers c
+LEFT JOIN CustomerPoints cp ON cp.customer_id = c.customer_id
+LEFT JOIN Rentals r ON r.customer_id = c.customer_id
+GROUP BY c.customer_id, c.name, cp.points
+ORDER BY points_earned DESC, paid_rentals DESC
+LIMIT 60;
