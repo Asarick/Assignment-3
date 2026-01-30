@@ -27,6 +27,7 @@ CREATE TABLE `rentals` (
   `total_cost` decimal(10,2) NOT NULL,
   `rental_status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE `vehicles` (
   `vehicle_id` int(11) NOT NULL,
   `make` varchar(50) NOT NULL,
